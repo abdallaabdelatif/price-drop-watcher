@@ -1,0 +1,10 @@
+{
+  "currency": "EGP",
+  "products": [
+    {
+      "name": "Example product",
+      "url": "https://example.com/product",
+      "price_selector": ".price"
+    }
+  ]
+}

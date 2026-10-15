@@ -1,0 +1,1 @@
+"""Personal price drop watcher."""
