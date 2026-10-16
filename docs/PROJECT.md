@@ -1,6 +1,6 @@
 # Price Drop Watcher — V1 plan
 
-Status: simplified V1 approved. M1 bootstrap and configuration are implemented; later milestones remain planned.
+Status: simplified V1 approved. M1 bootstrap/configuration and M2 extraction are implemented; later milestones remain planned.
 
 ## Purpose and scope
 

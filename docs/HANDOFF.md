@@ -1,41 +1,40 @@
-# Session handoff
+﻿# Session handoff
 
-Updated: 2026-10-15.
+Updated: 2026-10-16.
 
 ## Current milestone
 
-Simplified V1 approved; M1 complete. User selected EGP. M2 through M6 are not started.
+M1 and M2 complete; M3 through M6 not started. Simplified V1 approved; watchlist currency is EGP.
 
 ## Completed work
 
-Added src-layout package metadata, Product/Config dataclasses, JSON validation, EGP example configuration, ignore rules, Git Bash setup instructions, and configuration tests. Planning documents reflect approval and EGP. Existing virtual environment preserved. No commits made; project files remain untracked.
+M1: package setup, Product/Config dataclasses, JSON validation, example configuration, ignore rules, and setup documentation.
+
+M2: strict Decimal parsing, synchronous Playwright scraping, structured PriceResult (exact URL, integer minor units, currency, aware UTC timestamp), and extraction-only CLI requiring --no-notify. Expected product failures are reported while remaining products continue. SQLite and Telegram are not implemented. Changes remain uncommitted.
 
 ## Important architectural decisions
 
-Use Python 3.11+, synchronous Playwright, SQLite, Telegram, and Windows Task Scheduler. Prefer small functions and standard-library dependencies.
+Use Python 3.11+, synchronous Playwright, SQLite, Telegram, and Windows Task Scheduler; keep modules small. Playwright is the only new direct dependency; install Chromium separately.
 
-One watchlist currency (EGP); products contain name, exact URL, and CSS price selector. Validate currency-code shape without a registry. Planned parsing uses comma grouping, dot decimals, Decimal, and integer minor units with two decimal places.
+Accept comma grouping, dot decimals, at most two fractional digits, and an optional configured currency code. Reject ambiguous/nonpositive prices. Require exactly one visible CSS price match. Navigation/price timeouts are 30/10 seconds. The caller owns pages; CLI closes browser resources and pauses five seconds between products.
 
-One observations table; exact URL/currency identifies history. First observation establishes a baseline. Save every successful observation before one Telegram attempt per drop. Failed sends and --no-notify advance history without replay, so alerts can be lost.
-
-Task Scheduler prevents scheduled overlap; avoid concurrent manual runs. Retries, queues, migrations, multiple locales/currencies, and application locks are deferred to V2. Secrets belong in environment variables.
+Planned storage uses one observations table keyed for lookup by exact URL/currency. First success establishes baseline; save every success before attempting one notification for a strictly lower price. Failed/suppressed notifications are not replayed. Queues, retries, migrations, multiple locales, and application locks are deferred.
 
 ## Relevant files
 
-- AGENTS.md: workflow and safeguards.
-- docs/PROJECT.md, docs/ARCHITECTURE.md, docs/TASKS.md: requirements, design, acceptance criteria.
-- src/price_drop_watcher/config.py and tests/test_config.py: M1 implementation/tests.
-- pyproject.toml, README.md, .gitignore, config/products.example.json: setup/configuration.
-- Generated *.egg-info files are ignored build metadata; edit pyproject.toml instead.
+- AGENTS.md; docs/PROJECT.md, ARCHITECTURE.md, TASKS.md: instructions and acceptance criteria.
+- src/price_drop_watcher/{config,prices,scraper,__main__}.py: implementation.
+- tests/test_{config,prices,scraper}.py; tests/fixtures/: deterministic tests.
+- README.md, pyproject.toml, config/products.example.json, .gitignore: setup/configuration.
 
 ## Tests and their results
 
-Existing .venv: Python 3.12.6. Editable dev installation and package import succeeded. Latest pytest run: 73 passed, one cache permission warning. Initial sandbox run could not access temporary-file fixtures; authorized rerun passed. Dependency download required network approval. Ignore checks passed. No live-site requests, browser installation, scheduling, or Telegram sends occurred. Tests were not rerun for this documentation update.
+Python 3.12.6; Playwright 1.64.0 and Chromium installed. Latest full suite: 113 passed (73 configuration, 29 parser, 11 Chromium/CLI), one pytest cache permission warning. Browser requests use local routed HTML only. Sandbox temporary-file restrictions required an authorized test run. Tests were not rerun for this documentation-only update.
 
 ## Known issues and blockers
 
-Real product URL, displayed EGP symbol, selector, and price meaning remain unspecified; example values are placeholders. These do not block local-fixture development. No CLI, scraper, persistence, or notification implementation exists yet.
+Real URL, selector, EGP symbol, and intended price meaning remain unspecified; these do not block M3. Symbols and other number formats are unsupported. Fixtures do not establish retailer compatibility. No CAPTCHA bypass or selector repair. Real-page checks require separate authorization.
 
 ## Next recommended task
 
-M2: price parser, synchronous Playwright extraction with cleanup/timeouts, local Chromium fixtures, and minimal --no-notify CLI without persistence/credentials. Follow TASKS.md acceptance criteria. Real-page checks require separate authorization.
+Implement M3 SQLite observations, latest-price lookup, committed insertion, and drop comparisons per TASKS.md. Test persistence, unchanged prices, URL/currency separation, ordering, and rollback. Leave Telegram for M4.

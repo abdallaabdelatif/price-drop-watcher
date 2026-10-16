@@ -1,6 +1,6 @@
 # Minimal V1 architecture
 
-Status: simplified V1 approved; M1 implemented. PROJECT.md defines behavior; TASKS.md defines implementation order.
+Status: simplified V1 approved; M1 and M2 implemented. PROJECT.md defines behavior; TASKS.md defines implementation order.
 
 ## Flow and boundaries
 
@@ -76,7 +76,7 @@ Use type hints for public functions; these contracts do not require class abstra
 | --- | --- |
 | load_config(path: Path) -> Config | Read and validate JSON; Config contains currency and list[Product]. |
 | parse_price(text: str, currency: str) -> int | Return positive integer minor units using the single documented format. |
-| fetch_price(page: Page, product: Product, currency: str) -> int | Navigate, wait, extract, and parse; caller owns browser/page lifecycle. |
+| fetch_price(page: Page, product: Product, currency: str) -> PriceResult | Navigate, wait, extract, and parse; caller owns browser/page lifecycle. Result contains product_url, price_minor, currency, and aware observed_at_utc. |
 | initialize_database(connection: sqlite3.Connection) -> None | Create history table/index if absent. |
 | latest_price(connection, url: str, currency: str) -> int or None | Return preceding successful amount. |
 | save_price(connection, product: Product, currency: str, price_minor: int, observed_at: datetime) -> None | Insert and commit one observation. |

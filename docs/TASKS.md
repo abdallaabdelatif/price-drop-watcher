@@ -1,6 +1,6 @@
 # Development milestones — simplified V1
 
-Status: simplified V1 approved. M1 implemented; validation results recorded below. M2 through M6 are not started.
+Status: simplified V1 approved. M1 and M2 complete; validation results recorded below. M3 through M6 are not started.
 
 ## P0 — Planning revision
 
@@ -26,9 +26,11 @@ Validation (2026-10-15): Python 3.12.6 in the existing .venv; editable install a
 
 Depends on M1. This is the first functional slice, before persistence.
 
-- [ ] Add Decimal-to-minor-unit parsing for one documented format.
-- [ ] Add synchronous Playwright extraction with explicit waits/timeouts and resource cleanup.
-- [ ] Provide a minimal --no-notify CLI check that prints extracted prices; database recording is added in M3.
+- [x] Add Decimal-to-minor-unit parsing for one documented format.
+- [x] Add synchronous Playwright extraction with explicit waits/timeouts and resource cleanup.
+- [x] Provide a minimal --no-notify CLI check that prints extracted prices; database recording is added in M3.
+
+Validation (2026-10-16): complete suite `python -m pytest -q --tb=short`: 113 passed in 10.20 seconds, one existing pytest cache permission warning. Actual Chromium tests route every browser request to local HTML fixtures and cover normal/delayed, missing/multiple/malformed prices, navigation timeout, HTTP/network failure, invalid selectors, and CLI success/failure continuation and cleanup. No shopping-site requests, SQLite, or Telegram. Playwright and Chromium installed with authorization. Initial sandbox run hit temporary-file permissions; an early browser run preceded completion of the browser download. The final authorized run passed after installation. Currency symbols remain deferred until one is agreed.
 
 Acceptance: pure parser tests cover valid grouping/decimals/currency marker, malformed grouping, ambiguous amounts, excess precision, and nonpositive values. Actual Chromium tests use local HTML for normal/delayed prices and missing/multiple selectors. The CLI can demonstrate extraction without credentials or a database. Optional real-page review requires a supplied URL/currency/selector and separate authorization; it is not an automated-test dependency.
 
