@@ -9,7 +9,7 @@ from price_drop_watcher.config import Product
 from price_drop_watcher.prices import parse_price
 
 NAVIGATION_TIMEOUT_MS = 30_000
-PRICE_TIMEOUT_MS = 10_000
+PRICE_TIMEOUT_MS = 20_000
 
 
 @dataclass(frozen=True)
@@ -27,7 +27,9 @@ class ScrapeError(Exception):
 def fetch_price(page: Page, product: Product, currency: str) -> PriceResult:
     """Navigate to the exact URL and extract exactly one CSS-matched price."""
     try:
-        response = page.goto(product.url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT_MS)
+        response = page.goto(
+            product.url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT_MS
+        )
         if response is not None and response.status >= 400:
             raise ScrapeError(f"Navigation returned HTTP {response.status}")
     except PlaywrightTimeoutError as exc:
